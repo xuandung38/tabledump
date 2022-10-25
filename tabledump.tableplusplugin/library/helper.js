@@ -57,6 +57,9 @@ function getColumnMigrate(columnName, dataType, isNullable, defaultVal, extra, c
       typeLength = typeLength.substring(0, typeLength.length - 1);
       migration = "$table->enum('" + columnName + "', [" + typeLength + "])";
       break;
+    case "bigint unsigned":
+      migration = "$table->unsignedBigInteger('" + columnName + "')";
+      break;
     case "int8":
     case "bigint":
       migration = "$table->bigInteger('" + columnName + "')";
@@ -81,10 +84,10 @@ function getColumnMigrate(columnName, dataType, isNullable, defaultVal, extra, c
       migration = `$table->${typeOnly}('` + columnName + "')";
       break;
   }
-  if (dataType.includes("unsigned")) {
-    migration += "->unsigned()";
-  }
-  
+  // if (dataType.includes("unsigned")) {
+  //   migration += "->unsigned()";
+  // }
+
   if (isNullable.toLowerCase().startsWith("y")) {
     migration += "->nullable()";
   }
@@ -96,7 +99,11 @@ function getColumnMigrate(columnName, dataType, isNullable, defaultVal, extra, c
   if (extra) {
     switch (extra) {
       case "auto_increment":
-        migration += "->autoIncrement()";
+        if(typeOnly === "bigint unsigned"){
+          migration = "$table->bigIncrements('" + columnName + "')";
+        }else{
+          migration += "->autoIncrement()";
+        }
         break;
     }
   }
@@ -107,6 +114,8 @@ function getColumnMigrate(columnName, dataType, isNullable, defaultVal, extra, c
 
   return migration + ";";
 }
+
+
 
 function dumpTableAsLaravel(context, item) {
   var nameCamelcase = camelize(item.name());
@@ -121,8 +130,8 @@ use Illuminate\\Database\\Migrations\\Migration;
  * @author https://tableplus.com
  * @source https://github.com/TablePlus/tabledump
  */
-class Create${nameCamelcase}Table extends Migration
-{
+
+class Create${nameCamelcase}Table extends Migration {
     /**
      * Run the migrations.
      *
