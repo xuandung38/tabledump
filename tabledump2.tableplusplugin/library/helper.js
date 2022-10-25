@@ -130,7 +130,8 @@ use Illuminate\\Database\\Migrations\\Migration;
  * @author https://tableplus.com
  * @source https://github.com/TablePlus/tabledump
  */
-return new class extends Migration {
+
+class Create${nameCamelcase}Table extends Migration {
     /**
      * Run the migrations.
      *
@@ -207,7 +208,7 @@ return new class extends Migration {
     {
         Schema::dropIfExists('${item.name()}');
     }
-};
+}
 `;
     SystemService.insertToClipboard(result);
     SystemService.notify(
